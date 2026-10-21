@@ -1,0 +1,13 @@
+<?php if(!defined('UNIOR_INICIADO')){http_response_code(403);exit;} ?>
+<link rel="stylesheet" href="recursos/comprobante_media_carta.css?v=28">
+<div class="receipt-tools no-print"><button class="btn btn-primary" onclick="print()">Imprimir recibo</button><a class="btn btn-outline-primary" href="<?=url('p=receipt&t='.$r['token'])?>">Ver inscripción</a></div>
+<p class="formato-comprobante no-print">Hoja carta vertical · 21,59 × 27,94 cm. Diseño en la mitad superior, mitad inferior en blanco. Escala 100 %, sin encabezados ni pies del navegador.</p>
+<div class="vista-hoja-carta"><div class="hoja-carta"><article class="receipt-document comprobante-media-carta recibo-abono" data-imprimir-recibo="<?=user()&&($_GET['imprimir']??'')==='1'?'1':'0'?>">
+<header class="receipt-letterhead"><div><img class="logo-comprobante" src="recursos/logo-unior.jpg" alt="UNIOR"><strong>UNIVERSIDAD PRIVADA DE ORURO</strong><p>Formación continua</p></div><div class="receipt-number"><span>RECIBO DE PAGO</span><strong>N.º P-<?=str_pad((string)$pagoRecibo['id'],7,'0',STR_PAD_LEFT)?></strong><small><?=e($pagoRecibo['fecha_verificacion']??$pagoRecibo['fecha_abono'])?></small></div></header>
+<section class="receipt-event"><h2><?=e($r['event_name'])?></h2><p><?=e($r['venue'])?></p></section>
+<h3 class="document-section">RECIBIMOS DE</h3><p><strong><?=e(nombreParticipante($r))?></strong><br>CI: <?=e($r['ci'])?> · Carrera: <?=e($r['carrera'])?><?=$r['codigo_grupo']?' · Representante de inscripción grupal':''?></p>
+<table class="receipt-items"><tr><th>Concepto</th><th>Importe</th></tr><tr><td>Abono de inscripción<?=$r['codigo_grupo']?' del grupo':''?></td><td><?=money($pagoRecibo['importe_abono'])?></td></tr></table>
+<p><b>Transacción / operación:</b> <?=e($pagoRecibo['codigo_transaccion']??'Histórico')?><br><b>Forma de pago:</b> <?=e($pagoRecibo['metodo_abono'])?></p>
+
+<div class="receipt-bottom"><p>Este recibo acredita exclusivamente el abono indicado. Conserve el documento para su control.</p><div class="recibo-codigos"><div class="receipt-qr"><div class="qr" data-qr="<?=publicUrl('p=receipt&t='.$r['token'].'&pago='.$pagoRecibo['id'])?>"></div><small>Consultar recibo</small></div><?php qrWhatsappComprobante($r);?></div></div><footer class="receipt-document-footer">UNIOR · Recibo emitido por el sistema de eventos</footer></article></div></div>
+<script src="recursos/recibos.js?v=23"></script>

@@ -1,0 +1,44 @@
+# ==========================================
+# Respaldos y volcados de bases de datos
+# ==========================================
+*.sql
+*.sqlite
+!base_datos/esquema.sql
+
+# ==========================================
+# Archivos comprimidos y respaldos
+# ==========================================
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z
+
+# ==========================================
+# Almacenamiento y archivos subidos por usuarios
+# ==========================================
+/almacenamiento/archivos_subidos/*
+!/almacenamiento/archivos_subidos/.gitkeep
+/almacenamiento/instalado.bloqueo
+
+# ==========================================
+# Variables de entorno y secretos locales
+# ==========================================
+.env
+.env.*
+*.local
+
+# ==========================================
+# Logs y temporales del sistema
+# ==========================================
+*.log
+*.tmp
+*.bak
+
+# ==========================================
+# Basura del sistema operativo y editores
+# ==========================================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

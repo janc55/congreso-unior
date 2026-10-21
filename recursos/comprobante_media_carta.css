@@ -1,0 +1,161 @@
+/* Media carta horizontal: 8.5 × 5.5 pulgadas. Mismos tamaños en pantalla y papel. */
+.formato-comprobante{text-align:center;font-size:11px;color:#78696f;margin:12px auto;line-height:1.6}
+.receipt-document.comprobante-media-carta{box-sizing:border-box;width:215.9mm;max-width:100%;margin:0 auto;padding:6mm;background:#fff;color:#151515;border:1px solid #dedede;border-radius:6px;font-family:Arial,sans-serif;font-size:8pt;line-height:1.28}
+.comprobante-media-carta .receipt-letterhead{display:flex!important;justify-content:space-between;align-items:flex-start;gap:3mm;padding:0 0 2.5mm;margin:0;border-bottom:2px solid #ba1320}
+.comprobante-media-carta .receipt-letterhead>div:first-child{flex:1 1 54%;max-width:54%;min-width:0}
+.comprobante-media-carta .receipt-brand{margin:0 0 1.4mm;line-height:1}
+.comprobante-media-carta .logo-comprobante{display:block;width:31mm;height:14mm;max-width:100%;margin:0;object-fit:contain;background:#000;border-radius:2px}
+.comprobante-media-carta .receipt-letterhead strong{font-size:6.6pt;line-height:1.3;display:block}
+.comprobante-media-carta .receipt-letterhead p{font-size:6pt;line-height:1.3;color:#555;margin:1mm 0 0}
+.comprobante-media-carta .receipt-number{flex:0 1 43%;min-width:0;max-width:43%;padding:0!important;text-align:right!important}
+.comprobante-media-carta .receipt-number span{display:block;font-size:6.6pt;line-height:1.4}
+.comprobante-media-carta .receipt-number strong{display:block;font-size:13pt;line-height:1.3;margin:1.5mm 0;color:#111}
+.comprobante-media-carta .receipt-number small{display:block;font-size:6pt;line-height:1.4}
+.comprobante-media-carta .receipt-event{padding:2.5mm 0;margin:0;border-bottom:1px solid #ddd}
+.comprobante-media-carta .receipt-event>span{font-size:6.5pt;color:#ba1320;letter-spacing:1px;font-weight:700}
+.comprobante-media-carta .receipt-event h2{font-size:10.5pt;font-weight:700;line-height:1.3;margin:1.2mm 0;overflow-wrap:anywhere}
+.comprobante-media-carta .receipt-event p{font-size:6.7pt;line-height:1.4;color:#555;margin:0}
+.comprobante-media-carta .document-section{font-size:7pt;line-height:1.3;font-weight:700;letter-spacing:.5px;margin:2.5mm 0 1.1mm}
+.comprobante-media-carta .receipt-data,.comprobante-media-carta .receipt-items{width:100%;border-collapse:collapse;table-layout:fixed;margin:0}
+.comprobante-media-carta .receipt-data th,.comprobante-media-carta .receipt-data td,.comprobante-media-carta .receipt-items th,.comprobante-media-carta .receipt-items td{font-size:7pt!important;line-height:1.3;padding:1.25mm 1.5mm!important;vertical-align:top;border:1px solid #ddd;overflow-wrap:anywhere;white-space:normal}
+.comprobante-media-carta .receipt-data th{background:#f8f7f7;font-weight:600;width:auto}
+.comprobante-media-carta .receipt-items th:first-child{width:62%}
+.comprobante-media-carta .receipt-items th:nth-child(2){width:14%}
+.comprobante-media-carta .receipt-items th:nth-child(3){width:24%}
+.comprobante-media-carta .receipt-items td:last-child,.comprobante-media-carta .receipt-items th:last-child{text-align:right}
+.comprobante-media-carta .receipt-items thead{background:#211e20;color:#fff}
+.comprobante-media-carta .receipt-items tfoot{color:#a31a2a;background:#fcf8f9}
+.comprobante-media-carta .receipt-items small{font-size:6.5pt}
+.comprobante-media-carta .receipt-bottom{display:grid!important;grid-template-columns:minmax(0,1fr) 25mm;gap:3mm;margin:2mm 0 0;align-items:start}
+.comprobante-media-carta .receipt-payment p{font-size:7pt;line-height:1.4;margin:1.2mm 0;overflow-wrap:anywhere}
+.comprobante-media-carta .document-state{font-size:6.6pt;line-height:1.4;padding:1.5mm 2mm;margin:0 0 1.5mm}
+.comprobante-media-carta .receipt-note{font-size:6.5pt!important;line-height:1.45;margin-top:1.5mm}
+.comprobante-media-carta .receipt-qr{padding:3mm 0 0!important;text-align:center;min-width:0}
+.comprobante-media-carta .receipt-qr .qr{display:inline-block;padding:0!important;background:#fff}
+.comprobante-media-carta .receipt-qr .qr img{display:block;width:23mm!important;height:23mm!important;max-width:none!important}
+.comprobante-media-carta .receipt-qr .qr canvas{display:none}
+.comprobante-media-carta .receipt-qr strong{display:block;font-size:5.8pt;line-height:1.4;margin:1mm 0}
+.comprobante-media-carta .receipt-qr small{display:block;font-size:5.6pt;line-height:1.4;margin:0}
+.comprobante-media-carta .resumen-grupo{margin:2.5mm 0 0;padding:1.5mm 0 0;border-top:1px solid #ba1320}
+.comprobante-media-carta .resumen-grupo p{font-size:6.7pt;line-height:1.4;margin:1mm 0}
+.comprobante-media-carta .resumen-grupo table{width:100%;border-collapse:collapse;table-layout:fixed;margin:0}
+.comprobante-media-carta .resumen-grupo th:first-child{width:43%}
+.comprobante-media-carta .resumen-grupo td,.comprobante-media-carta .resumen-grupo th{font-size:6.6pt;line-height:1.3;padding:1mm .8mm;overflow-wrap:anywhere}
+.comprobante-media-carta .receipt-document-footer{display:flex;flex-direction:column;gap:.7mm;font-size:5.8pt;line-height:1.4;color:#777;border-top:1px solid #ddd;margin:2.5mm 0 0;padding:1.5mm 0 0}
+@media(max-width:440px){.receipt-document.comprobante-media-carta{padding:4mm}.comprobante-media-carta .receipt-data th,.comprobante-media-carta .receipt-data td{padding:1mm!important}.comprobante-media-carta .receipt-bottom{gap:2mm}.comprobante-media-carta .receipt-letterhead strong{font-size:6pt}}
+@media print{
+ @page{size:215.9mm 279.4mm;margin:5mm}
+ html,body{margin:0!important;padding:0!important;background:#fff!important}
+ .public-main{max-width:none!important;width:auto!important;padding:0!important;margin:0!important}
+ .receipt-document.comprobante-media-carta{width:203.9mm!important;max-width:100%!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+ .comprobante-media-carta .receipt-letterhead,.comprobante-media-carta .receipt-bottom,.comprobante-media-carta tr{break-inside:avoid}
+ .comprobante-media-carta .receipt-qr .qr img{width:23mm!important;height:23mm!important}
+ .comprobante-media-carta .receipt-qr .qr canvas{display:none!important}
+ .comunidad-unior,.no-print,.public-header,.public-footer,.formato-comprobante{display:none!important}
+ .comprobante-media-carta .receipt-items thead{-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#eee;color:#111}
+ .comprobante-media-carta .logo-comprobante{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* Columnas para el comprobante horizontal. */
+.receipt-columns{display:flex;gap:5mm;align-items:flex-start}
+.receipt-column{flex:1 1 0;min-width:0;width:48%}
+.comprobante-media-carta .receipt-column .resumen-grupo{border:0;margin:0;padding:0}
+.comprobante-inscripcion .receipt-payment p{margin:.6mm 0}
+.comprobante-inscripcion .receipt-letterhead{padding-bottom:1.5mm}
+.comprobante-inscripcion .logo-comprobante{height:10mm;width:26mm}
+.comprobante-inscripcion .receipt-event{padding:1.5mm 0}
+.comprobante-inscripcion .receipt-qr{padding-top:1mm!important}
+@media screen and (max-width:600px){.receipt-columns{display:block}.receipt-column{width:100%}}
+.eleccion-pago{border:1px solid #e6d8da;border-left:4px solid #ba1320;border-radius:8px;padding:18px;margin:0 0 20px;background:#fffafa}
+.eleccion-pago legend{font-size:18px;font-weight:700;width:auto;padding:0 8px;color:#8e1926}
+.eleccion-pago small{display:block;color:#75676b;line-height:1.6}
+.eleccion-pago input:disabled{background:#ece9ea;cursor:not-allowed;opacity:.65}
+.eleccion-pago [hidden]{display:none!important}
+
+@media print{
+ .comprobante-media-carta .receipt-document-footer{flex-direction:row;justify-content:space-between;gap:2mm;margin-top:1.5mm;padding-top:1mm;break-inside:avoid}
+ .comprobante-inscripcion .receipt-data th,.comprobante-inscripcion .receipt-data td,.comprobante-inscripcion .receipt-items th,.comprobante-inscripcion .receipt-items td{padding:.8mm 1.2mm!important;font-size:6.7pt!important}
+ .comprobante-inscripcion .receipt-payment p{font-size:6.6pt;line-height:1.3;margin:.4mm 0}
+ .comprobante-inscripcion .document-section{margin:1.5mm 0 1mm}
+ .comprobante-inscripcion .receipt-event h2{margin:.7mm 0}
+}
+
+.recibo-abono>p{font-size:8pt;line-height:1.35;margin:2mm 0}
+.recibo-abono .receipt-bottom>p{font-size:7pt;line-height:1.4;margin:1mm 0}
+.recibo-abono .logo-comprobante{height:10mm;width:26mm}
+@media print{
+ .comprobante-grupal .resumen-grupo th,.comprobante-grupal .resumen-grupo td{font-size:6pt;padding:.6mm .6mm;line-height:1.2}
+ .comprobante-grupal .resumen-grupo p{font-size:6pt;line-height:1.25;margin:.6mm 0}
+ .comprobante-inscripcion .receipt-bottom{margin-top:1mm}
+ .comprobante-media-carta .receipt-qr .qr img{width:20mm!important;height:20mm!important}
+ .comprobante-media-carta .receipt-qr strong{margin:.5mm 0}
+}
+.recibo-abono .receipt-letterhead{padding-bottom:1.5mm}
+.recibo-abono .receipt-event{padding:1mm 0}
+.recibo-abono .receipt-event h2{margin:.6mm 0}
+.recibo-abono>.document-section{margin:1.5mm 0 1mm}
+.recibo-abono>p{margin:1mm 0;font-size:7.5pt}
+.recibo-abono .receipt-bottom{margin-top:1mm}
+/* Tamaño físico: media carta horizontal, sin reducción del documento. */
+.receipt-document.comprobante-media-carta{width:215.9mm;font-size:10pt}
+.comprobante-media-carta .receipt-letterhead strong{font-size:8pt}
+.comprobante-media-carta .receipt-letterhead p,.comprobante-media-carta .receipt-number small{font-size:7.5pt}
+.comprobante-media-carta .receipt-number span{font-size:8.5pt}
+.comprobante-media-carta .receipt-number strong{font-size:16pt}
+.comprobante-media-carta .receipt-event h2{font-size:13pt}
+.comprobante-media-carta .receipt-event p{font-size:8.5pt}
+.comprobante-media-carta .document-section{font-size:9pt}
+.comprobante-media-carta .receipt-data th,.comprobante-media-carta .receipt-data td,.comprobante-media-carta .receipt-items th,.comprobante-media-carta .receipt-items td{font-size:8.5pt!important;padding:1mm 1.2mm!important}
+.comprobante-media-carta .receipt-payment p,.recibo-abono>p,.recibo-abono .receipt-bottom>p{font-size:9pt;line-height:1.35}
+.comprobante-media-carta .receipt-note{font-size:8pt!important}
+.comprobante-media-carta .receipt-bottom{grid-template-columns:minmax(0,1fr) 57mm;gap:4mm}
+.recibo-codigos{display:flex;gap:4mm;justify-content:flex-end;align-items:start}
+.recibo-codigos .receipt-qr{flex:0 0 26mm;width:26mm}
+.comprobante-media-carta .receipt-qr strong{font-size:6.5pt}
+.comprobante-media-carta .receipt-qr small{font-size:6pt}
+.comprobante-media-carta .receipt-qr .qr img{width:23mm!important;height:23mm!important}
+.comprobante-media-carta .resumen-grupo td,.comprobante-media-carta .resumen-grupo th{font-size:8pt;padding:.8mm .6mm}
+.comprobante-media-carta .resumen-grupo p{font-size:7.5pt}
+@media print{
+ @page{size:215.9mm 279.4mm;margin:5mm}
+ html,body{width:205.9mm!important;max-width:none!important;min-width:0!important;margin:0!important;padding:0!important;zoom:1!important;transform:none!important}
+ .public-main{width:205.9mm!important;max-width:none!important;margin:0!important;padding:0!important}
+ .receipt-document.comprobante-media-carta{width:205.9mm!important;max-width:none!important;min-height:129.7mm!important;margin:0!important;padding:0!important;zoom:1!important;transform:none!important;font-size:10pt}
+ .comprobante-media-carta .receipt-data th,.comprobante-media-carta .receipt-data td,.comprobante-media-carta .receipt-items th,.comprobante-media-carta .receipt-items td{font-size:8.5pt!important;padding:1mm 1.2mm!important}
+ .comprobante-media-carta .receipt-payment p{font-size:8.5pt!important;line-height:1.3}
+ .comprobante-media-carta .receipt-qr .qr img{width:23mm!important;height:23mm!important}
+ .comprobante-media-carta .receipt-document-footer{font-size:6.7pt}
+ .comprobante-grupal .resumen-grupo td,.comprobante-grupal .resumen-grupo th{font-size:7.5pt;padding:.7mm .6mm}
+ .comprobante-grupal .resumen-grupo p{font-size:7pt}
+}
+/* Evitar que los dos códigos se apilen o ensanchen la hoja al imprimir. */
+.comprobante-media-carta .receipt-bottom{display:flex!important;align-items:flex-start;gap:4mm}
+.comprobante-media-carta .receipt-bottom>.receipt-payment,.comprobante-media-carta .receipt-bottom>p{flex:1 1 0;min-width:0}
+.recibo-codigos{display:block;flex:0 0 57mm;width:57mm;white-space:nowrap;text-align:right}
+.recibo-codigos .receipt-qr{display:inline-block;vertical-align:top;width:26mm;white-space:normal;text-align:center}
+.recibo-codigos .receipt-qr+.receipt-qr{margin-left:3mm}
+.comprobante-media-carta .qr-grupo-unior{min-width:0!important;min-height:0!important;width:auto!important;height:auto!important;margin:0!important}
+.comprobante-media-carta .receipt-qr .qr{margin:0!important;min-width:0!important;min-height:0!important;line-height:0}
+.comprobante-media-carta .receipt-qr{padding:0!important}
+.comprobante-inscripcion .receipt-column>.receipt-payment{margin-top:3mm}
+.comprobante-inscripcion .receipt-column>.recibo-codigos{width:100%;margin-top:3mm;text-align:center}
+@media print{
+ .comprobante-grupal .resumen-grupo td,.comprobante-grupal .resumen-grupo th{padding:.4mm .6mm;line-height:1.2}
+ .comprobante-grupal .receipt-column>.recibo-codigos{margin-top:1mm}
+ .comprobante-grupal .receipt-qr .qr img{width:21mm!important;height:21mm!important}
+ .comprobante-grupal .receipt-event{padding:1mm 0}
+}
+.comprobante-media-carta .receipt-items th:first-child{width:58%}
+.comprobante-media-carta .receipt-items th:nth-child(2){width:18%}
+.comprobante-media-carta .receipt-items th:nth-child(3){width:24%}
+
+/* Hoja carta vertical: el comprobante ocupa solo su mitad superior. */
+.vista-hoja-carta{overflow-x:auto;padding:12px 0 24px;margin:0 auto}
+.hoja-carta{box-sizing:border-box;width:215.9mm;min-height:279.4mm;padding:5mm;margin:0 auto;background:#fff;border:1px solid #ddd;box-shadow:0 4px 20px #00000016}
+.hoja-carta>.receipt-document.comprobante-media-carta{box-sizing:border-box;width:205.9mm;max-width:none;min-height:129.7mm;margin:0;padding:0;border:0;border-radius:0;box-shadow:none}
+@media print{
+ @page{size:215.9mm 279.4mm;margin:5mm}
+ .vista-hoja-carta{overflow:visible!important;padding:0!important;margin:0!important}
+ .hoja-carta{width:205.9mm!important;min-height:269.4mm!important;padding:0!important;margin:0!important;border:0!important;box-shadow:none!important;background:#fff!important}
+ .hoja-carta>.receipt-document.comprobante-media-carta{width:205.9mm!important;min-height:129.7mm!important;margin:0!important;padding:0!important}
+}

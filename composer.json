@@ -1,0 +1,13 @@
+{
+  "name": "unior/congreso",
+  "description": "Sistema de Gestion de Congresos y Eventos UNIOR",
+  "type": "project",
+  "require": {
+    "php": ">=8.1",
+    "ext-pdo": "*",
+    "ext-pdo_mysql": "*",
+    "ext-mbstring": "*",
+    "ext-fileinfo": "*",
+    "ext-gd": "*"
+  }
+}

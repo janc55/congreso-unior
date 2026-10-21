@@ -1,0 +1,8 @@
+<?php
+if(!defined('UNIOR_INICIADO')){http_response_code(403);exit;}
+headerPage('Categorías de otros gastos');
+$edit=isset($_GET['id'])?one('SELECT * FROM expense_categories WHERE id=?',[(int)$_GET['id']]):null;
+?>
+<div class="card p-4"><h3><?=$edit?'Editar categoría':'Crear categoría'?></h3><p>Cree las categorías que necesite: transporte, alquiler, publicidad, alimentación, servicios y otras.</p><form method="post"><?=csrf()?><input type="hidden" name="action" value="category"><input type="hidden" name="category_id" value="<?=e($edit['id']??0)?>"><?php field('name','Nombre de la categoría',$edit['name']??'');?><label><input type="checkbox" name="active" <?=!$edit||$edit['active']?'checked':''?>> Activa para nuevos gastos</label><button class="btn btn-primary ml-3">Guardar categoría</button> <a href="<?=url('p=categories')?>">Nueva categoría</a></form></div>
+<div class="card p-4"><h3>Categorías registradas</h3><div class="table-responsive"><table class="table"><tr><th>Nombre</th><th>Estado</th><th>Gastos registrados</th><th></th></tr><?php foreach(all('SELECT c.*,(SELECT COUNT(*) FROM expenses g WHERE g.category_id=c.id) used FROM expense_categories c ORDER BY name') as $c):?><tr><td><?=e($c['name'])?></td><td><?=$c['active']?'Activa':'Inactiva'?></td><td><?=e($c['used'])?></td><td><a class="btn btn-outline-primary btn-sm" href="<?=url('p=categories&id='.$c['id'])?>">Editar</a></td></tr><?php endforeach?></table></div><p>Desactivar una categoría conserva sus gastos y su historial en los reportes.</p><a class="btn btn-primary" href="<?=url('p=expense_report')?>">Ver reporte por categorías</a></div>
+<?php footerPage();

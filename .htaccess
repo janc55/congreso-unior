@@ -1,0 +1,5 @@
+Options -Indexes
+DirectoryIndex inicio.php
+<FilesMatch "^(config\.php|config\.example\.php|LEEME\.md|PRUEBAS\.md|TERCEROS\.md)$">
+Require all denied
+</FilesMatch>
