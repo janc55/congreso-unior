@@ -1,5 +1,22 @@
 'use strict';
-document.getElementById('menu-toggle')?.addEventListener('click',()=>document.body.classList.toggle('menu-open'));
+(()=>{
+ const boton=document.getElementById('menu-toggle'),menu=document.getElementById('menu-principal'),fondo=document.getElementById('menu-fondo'),cerrar=document.getElementById('menu-cerrar');if(!boton||!menu)return;
+ const movil=window.matchMedia('(max-width: 991.98px)');
+ function abrir(valor){
+  document.body.classList.toggle('menu-open',valor);boton.setAttribute('aria-expanded',String(valor));boton.setAttribute('aria-label',valor?'Cerrar menú':'Abrir menú');
+  if(fondo)fondo.hidden=!valor;
+ }
+ boton.addEventListener('click',()=>{
+  if(movil.matches){abrir(!document.body.classList.contains('menu-open'));if(document.body.classList.contains('menu-open'))cerrar?.focus();}
+  else{const oculto=document.body.classList.toggle('menu-escritorio-oculto');boton.setAttribute('aria-expanded',String(!oculto));}
+ });
+ function terminar(){abrir(false);boton.focus();}
+ fondo?.addEventListener('click',terminar);cerrar?.addEventListener('click',terminar);
+ document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&document.body.classList.contains('menu-open'))terminar();});
+ menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{if(movil.matches)abrir(false);}));
+ const adaptar=()=>{abrir(false);document.body.classList.remove('menu-escritorio-oculto');boton.setAttribute('aria-expanded',String(!movil.matches));};
+ if(movil.addEventListener)movil.addEventListener('change',adaptar);else movil.addListener(adaptar);adaptar();
+})();
 document.querySelectorAll('[data-qr]').forEach(el=>new QRCode(el,{text:el.dataset.qr,width:180,height:180,correctLevel:QRCode.CorrectLevel.M}));
 document.querySelectorAll('.copy').forEach(el=>el.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(el.dataset.copy);el.textContent='Enlace copiado';}catch{window.prompt('Copie este enlace:',el.dataset.copy);}}));
 document.querySelectorAll('form[data-confirm]').forEach(f=>f.addEventListener('submit',ev=>{if(!confirm(f.dataset.confirm))ev.preventDefault();}));

@@ -4,7 +4,10 @@
  const form=bloque.closest('form'),cobrar=form.elements.paid_now,tipo=form.elements.tipo_cobro,monto=form.elements.importe_abono,referencia=form.elements.reference;
  function actualizar(){
   const activo=cobrar.checked,adelanto=activo&&tipo?.value==='adelanto';
-  referencia.required=activo;
+  const bancario=form.elements.payment_method.value!=='Efectivo';
+  referencia.required=activo&&bancario;
+  const archivo=form.elements.comprobante_presencial;if(archivo){archivo.disabled=!activo;archivo.required=activo&&bancario;}
+  const ayuda=bloque.querySelector('[data-ayuda-comprobante]');if(ayuda)ayuda.textContent=bancario?'(obligatorio para este pago)':'(opcional en efectivo)';
   if(tipo){tipo.disabled=!activo;tipo.required=activo;}
   if(monto){
    monto.disabled=!adelanto;monto.required=adelanto;
@@ -17,4 +20,11 @@
  }
  form.addEventListener('change',actualizar,true);form.addEventListener('input',actualizar,true);
  actualizar();form.dispatchEvent(new Event('input',{bubbles:true}));
+})();
+
+(()=>{
+ document.querySelectorAll('[data-cobro-saldo]').forEach(form=>{
+  function ajustar(){const requerido=form.elements.payment_method.value!=='Efectivo';form.elements.reference.required=requerido;form.elements.comprobante_presencial.required=requerido;}
+  form.elements.payment_method.addEventListener('change',ajustar);ajustar();
+ });
 })();

@@ -6,7 +6,8 @@ if(publicPortal() && !in_array($action,['register','proof'],true)){http_response
 try {
  if($action==='proof') enviarAbono();
  if($action==='cobrar_abono') cobrarAbono();
- if($action==='review' && revisarAbono()) exit;
+ if($action==='review') revisarPagoAutorizado();
+ if($action==='estado_inscripcion') cambiarEstadoInscripcion();
 
  if($action==='login') {
   $now=time();$attempt=$_SESSION['login_attempt']??['count'=>0,'until'=>0];if($attempt['until']>$now)throw new RuntimeException('Espere unos minutos antes de volver a intentar.');
@@ -31,7 +32,7 @@ try {
   q('INSERT INTO registrations(tratamiento,event_id,token,certificate_token,first_name,last_name,ci,city,phone,email,institution,category,price,tariff_id,status,payment_method,reference,paid_at,reviewed_by,created_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[$tratamiento,$id,$token,$ct,$first,$last,$ci,$city,$phone,$email,mb_substr(trim($_POST['institution']??''),0,200),$category,$t['price'],$t['id'],$cash?'Pagado':'Pendiente',$method,$cash?mb_substr(trim($_POST['reference']??''),0,120):null,$cash?date('Y-m-d H:i:s'):null,$cash?$staff['id']:null,$staff['id']??null]);
   q('UPDATE registrations SET carrera=? WHERE token=?',[validarCarrera($_POST),$token]);
   if($cash) registrarCobroInicial(registration($token));
-  audit('Inscripción','Evento '.$id.' · Registro '.$db->lastInsertId());$db->commit();finalizarInscripcion($token);
+  audit('Inscripción','Evento '.$id.' · Registro '.registration($token)['id'].' · Usuario '.($staff['id']??'En línea'));$db->commit();finalizarInscripcion($token);
  }
  if($action==='proof') {
   $r=registration(textValue('token',48));if($r['codigo_grupo'])comprobanteGrupo($r);$db->beginTransaction();$locked=one('SELECT status FROM registrations WHERE id=? FOR UPDATE',[$r['id']]);
@@ -95,13 +96,6 @@ try {
   if($mid){if(!one('SELECT id FROM materials WHERE id=? AND event_id=? FOR UPDATE',[$mid,$id]))throw new RuntimeException('Material inválido.');$total=(int)q('SELECT COALESCE(SUM(quantity),0) FROM deliveries WHERE material_id=?',[$mid])->fetchColumn();$max=(int)q('SELECT COALESCE(MAX(n),0) FROM (SELECT SUM(quantity) n FROM deliveries WHERE material_id=? GROUP BY registration_id) x',[$mid])->fetchColumn();if($stock<$total||$allowance<$max)throw new RuntimeException('El stock o la asignación no pueden ser inferiores a lo ya entregado.');q('UPDATE materials SET name=?,stock=?,allowance=?,unit_cost=?,active=? WHERE id=?',[$name,$stock,$allowance,$cost,isset($_POST['active'])?1:0,$mid]);}
   else q('INSERT INTO materials(event_id,name,stock,allowance,unit_cost) VALUES(?,?,?,?,?)',[$id,$name,$stock,$allowance,$cost]);
   audit('Material guardado','Evento '.$id);$db->commit();go('p=event&id='.$id);
- }
- if($action==='review') {
-  $grupoRegistro=registration(textValue('token',48));if($grupoRegistro['codigo_grupo'])revisarGrupo($grupoRegistro,$u);
-  $r=registration(textValue('token',48));$state=$_POST['status']??'';if(!in_array($state,['Pagado','Rechazado','Anulado'],true))throw new RuntimeException('Estado inválido.');$note=mb_substr(trim($_POST['review_note']??''),0,2000);
-  $db->beginTransaction();$locked=one('SELECT * FROM registrations WHERE id=? FOR UPDATE',[$r['id']]);if(in_array($locked['status'],['Pagado','Anulado'],true))throw new RuntimeException('El pago ya está confirmado o el registro fue anulado.');if($state==='Pagado'&&$locked['created_by']===null&&!$locked['proof'])throw new RuntimeException('Para confirmar una inscripción en línea debe adjuntarse y verificarse un comprobante.');if($state!=='Pagado'&&$note==='')throw new RuntimeException('Indique el motivo.');
-  if($state==='Pagado')q('UPDATE registrations SET monto_cobrado=price WHERE id=?',[$r['id']]);
-  q('UPDATE registrations SET status=?,review_note=?,reviewed_by=?,paid_at=?,payment_method=? WHERE id=?',[$state,$note,$u['id'],$state==='Pagado'?date('Y-m-d H:i:s'):null,$locked['payment_method']??'Efectivo',$r['id']]);audit('Pago revisado','Registro '.$r['id'].' · '.$state);$db->commit();flash('Estado actualizado.');go('p=participant&t='.$r['token']);
  }
  if($action==='category') {
   $cid=(int)($_POST['category_id']??0);$name=textValue('name',150);$active=isset($_POST['active'])?1:0;

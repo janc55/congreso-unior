@@ -10,3 +10,34 @@ body{font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--unior-tinta)}.pub
 .boton-inscripcion[aria-busy=true] .icono-unior{visibility:hidden}.grupo-integrante .nombre-con-tratamiento{flex-wrap:nowrap}.grupo-integrante .nombre-con-tratamiento .mensaje-error-campo{flex:0 0 100%}
 
 .atencion-grupo .tabla-personas td{vertical-align:middle;font-size:12px}.persona-seleccionada{background:#fff0f2}.acciones-persona{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.acciones-persona .btn{white-space:normal}.material-persona{font-size:11px;line-height:1.7;color:#785a62}.material-completo{color:#237750}.recibos-panel{margin-top:22px}.recibos-panel h4{font-size:17px;font-weight:700}.recibo-persona{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px solid #eee;font-size:12px}.aviso-recibo-individual{font-size:12px;padding:14px;margin:18px 0;border:1px solid #e8dade;background:#fff;border-radius:8px}@media(max-width:600px){.recibo-persona{align-items:stretch;flex-direction:column}.acciones-persona .btn{width:100%}}
+/* Navegación táctil independiente de los complementos de AdminLTE. */
+#menu-toggle{min-width:44px;min-height:44px;font-size:24px;color:#a71325;background:#fff;border:1px solid #e4c8ce;line-height:1}
+.menu-cerrar{display:none}.menu-fondo[hidden]{display:none!important}
+.main-sidebar .nav-link{white-space:normal!important;overflow-wrap:break-word;line-height:1.5;min-height:44px}
+.main-sidebar .sidebar{height:auto;overflow:visible}.main-sidebar{overflow-y:auto;-webkit-overflow-scrolling:touch}
+@media(max-width:991.98px){
+ .main-header{position:sticky;top:0;z-index:1040;margin-left:0!important;min-height:58px;padding:6px 12px}
+ .menu-institucion{font-size:13px;line-height:1.3;max-width:55%;margin-left:10px!important}
+ .content-wrapper,.main-footer{margin-left:0!important}
+ .main-sidebar{position:fixed!important;left:0!important;top:0!important;bottom:0!important;margin-left:0!important;width:min(290px,86vw)!important;height:100vh!important;height:100dvh!important;min-height:0!important;transform:translateX(-105%)!important;z-index:1100!important;overflow-y:auto!important;box-shadow:6px 0 24px #0004}
+ body.menu-open .main-sidebar{transform:translateX(0)!important;top:0!important}
+ body.menu-open{overflow:hidden}
+ .main-sidebar .brand-link{padding-top:44px!important}.main-sidebar .logo-menu{height:65px}
+ .main-sidebar .sidebar{padding-bottom:30px}.main-sidebar .nav-sidebar{width:100%}
+ .menu-cerrar{display:block;position:absolute;right:12px;top:8px;min-width:40px;min-height:40px;background:#ba1320;border:0;border-radius:6px;color:white;font-size:28px;line-height:1;z-index:1}
+ .menu-fondo:not([hidden]){display:block;position:fixed;inset:0;border:0;background:#0008;width:100%;height:100%;z-index:1090}
+ .content-header h1{font-size:23px!important;line-height:1.3;overflow-wrap:break-word}
+}
+@media(min-width:992px){
+ .menu-fondo{display:none!important}
+ body.menu-escritorio-oculto .main-sidebar{transform:translateX(-100%)!important}
+ body.menu-escritorio-oculto .content-wrapper,body.menu-escritorio-oculto .main-header,body.menu-escritorio-oculto .main-footer{margin-left:0!important}
+}
+@media print{.menu-fondo,.menu-cerrar,#menu-toggle{display:none!important}body.menu-open{overflow:visible}}
+
+/* Lectura por filas: nombres/apellidos, documento/ciudad, celular/correo. */
+.campos-participante.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:0 0 18px}
+.campos-participante.row>.col-md-6{display:contents}
+.campos-participante.row>.col-md-6>.form-group{min-width:0;margin-bottom:0}
+.campos-participante .input-group{flex-wrap:nowrap}
+@media(max-width:767.98px){.campos-participante.row{grid-template-columns:minmax(0,1fr);gap:14px}}

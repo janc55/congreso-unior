@@ -37,10 +37,10 @@ function comprobanteGrupo(array $r): void {
  q("UPDATE registrations SET proof=?,status='En revisión',reference=?,payment_method='QR/Transferencia',review_note=NULL WHERE codigo_grupo=?",[$archivo,mb_substr(trim($_POST['reference']??''),0,120),$r['codigo_grupo']]);audit('Comprobante de grupo adjuntado','Grupo '.$r['codigo_grupo']);$db->commit();flash('Comprobante del grupo enviado para revisión.');go('p=receipt&t='.$r['token']);
 }
 function revisarGrupo(array $r,array $u): never {
- global $db;auth(true);$estado=$_POST['status']??'';$nota=mb_substr(trim($_POST['review_note']??''),0,2000);
- if(!in_array($estado,['Pagado','Rechazado','Anulado'],true)||($estado!=='Pagado'&&$nota===''))throw new RuntimeException('Seleccione el estado y explique el motivo cuando corresponda.');
+ global $db;auth();permisoVerificarInscripcion($r,$u);$estado=$_POST['status']??'';$nota=mb_substr(trim($_POST['review_note']??''),0,2000);
+ if(!in_array($estado,['Pagado','Rechazado'],true)||($estado!=='Pagado'&&$nota===''))throw new RuntimeException('Seleccione el estado y explique el motivo cuando corresponda.');
  $db->beginTransaction();$personas=integrantesGrupo($r,true);
  foreach($personas as $persona){if(in_array($persona['status'],['Pagado','Anulado'],true))throw new RuntimeException('El grupo ya está confirmado o anulado.');if($estado==='Pagado'&&$persona['created_by']===null&&!$persona['proof'])throw new RuntimeException('Debe adjuntarse y verificarse el comprobante de todo el grupo.');}
  if($estado==='Pagado')q('UPDATE registrations SET monto_cobrado=price WHERE codigo_grupo=?',[$r['codigo_grupo']]);
- q('UPDATE registrations SET status=?,review_note=?,reviewed_by=?,paid_at=?,payment_method=COALESCE(payment_method,?) WHERE codigo_grupo=?',[$estado,$nota,$u['id'],$estado==='Pagado'?date('Y-m-d H:i:s'):null,'QR/Transferencia',$r['codigo_grupo']]);audit('Pago de grupo revisado','Grupo '.$r['codigo_grupo'].' · '.$estado);$db->commit();flash('Estado actualizado para todos los integrantes del grupo.');go('p=participant&t='.$r['token']);
+ q('UPDATE registrations SET status=?,review_note=?,reviewed_by=?,paid_at=?,payment_method=COALESCE(payment_method,?) WHERE codigo_grupo=?',[$estado,$nota,$u['id'],$estado==='Pagado'?date('Y-m-d H:i:s'):null,'QR/Transferencia',$r['codigo_grupo']]);registrarVerificacion($r,$u,$estado,$nota);audit('Pago de grupo revisado','Grupo '.$r['codigo_grupo'].' · '.$estado);$db->commit();flash('Estado actualizado para todos los integrantes del grupo.');go('p=participant&t='.$r['token']);
 }

@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS inscripciones (
  ciudad VARCHAR(100) NOT NULL, celular VARCHAR(40) NOT NULL, correo VARCHAR(180) NOT NULL,
  institucion VARCHAR(200), carrera VARCHAR(120) NOT NULL DEFAULT 'Otra carrera', categoria ENUM('Estudiante','Profesional','Estudiante BTH','UNIOR') NOT NULL,
  precio DECIMAL(12,2) NOT NULL,
- monto_cobrado DECIMAL(12,2) NOT NULL DEFAULT 0, id_tarifa INT UNSIGNED NOT NULL,
+ monto_cobrado DECIMAL(12,2) NOT NULL DEFAULT 0, estado_previo_anulacion VARCHAR(30) NULL, id_tarifa INT UNSIGNED NOT NULL,
  estado ENUM('Pendiente','En revisión','Pagado','Rechazado','Anulado') NOT NULL DEFAULT 'Pendiente',
  forma_pago VARCHAR(30), referencia VARCHAR(120), comprobante VARCHAR(100), observacion_revision TEXT,
  fecha_pago DATETIME, id_revisor INT UNSIGNED, id_creador INT UNSIGNED, fecha_asistencia DATETIME,
@@ -79,3 +79,30 @@ CREATE TABLE IF NOT EXISTS pagos_inscripcion (
  INDEX(codigo_conjunto),
  FOREIGN KEY(id_titular) REFERENCES inscripciones(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cambios_inscripcion (
+ id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ id_inscripcion INT UNSIGNED NOT NULL,
+ autor_cambio INT UNSIGNED NOT NULL,
+ estado_anterior VARCHAR(30) NOT NULL,
+ estado_nuevo VARCHAR(30) NOT NULL,
+ motivo_cambio VARCHAR(2000) NOT NULL,
+ fecha_cambio TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ INDEX(id_inscripcion),
+ FOREIGN KEY(id_inscripcion) REFERENCES inscripciones(id),
+ FOREIGN KEY(autor_cambio) REFERENCES usuarios(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS verificaciones_inscripcion (
+ id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ id_inscripcion INT UNSIGNED NOT NULL,
+ id_pago INT UNSIGNED NULL,
+ usuario_revision INT UNSIGNED NOT NULL,
+ decision_revision ENUM('Confirmado','Rechazado') NOT NULL,
+ motivo_revision VARCHAR(2000) NULL,
+ fecha_revision DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+ UNIQUE KEY revision_pago_persona(id_inscripcion,id_pago),
+ FOREIGN KEY(id_inscripcion) REFERENCES inscripciones(id),
+ FOREIGN KEY(id_pago) REFERENCES pagos_inscripcion(id),
+ FOREIGN KEY(usuario_revision) REFERENCES usuarios(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

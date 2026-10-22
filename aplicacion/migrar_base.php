@@ -23,6 +23,8 @@ function migrarBase(PDO $db): void {
   }
  }
  crearEsquema($db);
+ if(!existeColumna($db,'inscripciones','estado_previo_anulacion'))$db->exec('ALTER TABLE inscripciones ADD COLUMN estado_previo_anulacion VARCHAR(30) NULL');
+
  if(!existeColumna($db,'inscripciones','carrera'))$db->exec("ALTER TABLE inscripciones ADD COLUMN carrera VARCHAR(120) NOT NULL DEFAULT 'Otra carrera'");
 
  foreach(['tarifas','inscripciones'] as $tabla){
@@ -47,6 +49,9 @@ function migrarBase(PDO $db): void {
  $db->exec("ALTER TABLE eventos MODIFY COLUMN enlace_grupo_whatsapp VARCHAR(2048) NOT NULL DEFAULT ''");
  $db->exec('UPDATE eventos SET grupo_minimo=5,grupo_descuento=20');
  $db->exec("UPDATE eventos SET color_nombre='#ba1320' WHERE color_nombre='#000080'");
+ $db->exec("INSERT IGNORE INTO verificaciones_inscripcion(id_inscripcion,id_pago,usuario_revision,decision_revision,motivo_revision,fecha_revision) SELECT r.id,pa.id,pa.usuario_verifica,pa.estado_abono,pa.nota_abono,pa.fecha_verificacion FROM pagos_inscripcion pa JOIN inscripciones r ON pa.codigo_conjunto COLLATE utf8mb4_unicode_ci=IF(r.codigo_grupo IS NULL,CONCAT('persona-',r.id),CONCAT('grupo-',r.codigo_grupo)) COLLATE utf8mb4_unicode_ci JOIN usuarios u ON u.id=pa.usuario_verifica WHERE r.id_creador IS NULL AND pa.importe_abono>0 AND pa.estado_abono IN ('Confirmado','Rechazado') ORDER BY pa.id");
+ $db->exec("INSERT INTO verificaciones_inscripcion(id_inscripcion,usuario_revision,decision_revision,motivo_revision,fecha_revision) SELECT r.id,r.id_revisor,IF(r.estado='Pagado','Confirmado','Rechazado'),r.observacion_revision,r.fecha_pago FROM inscripciones r JOIN usuarios u ON u.id=r.id_revisor WHERE r.id_creador IS NULL AND r.estado IN ('Pagado','Rechazado') AND NOT EXISTS(SELECT 1 FROM verificaciones_inscripcion v WHERE v.id_inscripcion=r.id)");
+
 }
 function protegerArchivosAnteriores(): void {
  $dir=dirname(__DIR__).'/almacenamiento/archivos_subidos';
