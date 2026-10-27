@@ -108,3 +108,5 @@ function responsableInscripcion(array $r): string {
 require __DIR__.'/estado_inscripcion.php';
 
 require __DIR__.'/verificaciones.php';
+
+require __DIR__.'/gestionar_comprobantes.php';

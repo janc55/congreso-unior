@@ -19,7 +19,7 @@
 @media(max-width:991.98px){.ayuda-tabla-inscriptor{display:block;font-size:12px;color:#70424b}}
 
 /* Estructura de tabla explícita: cada encabezado conserva su propia celda. */
-.tabla-inscriptor{display:table!important;border-collapse:collapse!important;border-spacing:0!important;table-layout:fixed!important;min-width:1350px}
+.tabla-inscriptor{display:table!important;border-collapse:collapse!important;border-spacing:0!important;table-layout:auto!important;min-width:1650px}
 .tabla-inscriptor thead{display:table-header-group!important}
 .tabla-inscriptor tbody{display:table-row-group!important}
 .tabla-inscriptor tr{display:table-row!important}
@@ -34,3 +34,18 @@
  .tabla-inscriptor td{font-size:7pt!important;padding:1.5mm 1mm!important}
  .tabla-inscriptor .no-print{display:none!important}
 }
+
+.tabla-inscriptor td:last-child{min-width:210px}.tabla-inscriptor details{min-width:180px}.tabla-inscriptor summary{cursor:pointer;color:#8e1828;font-weight:700}
+@media print{.tabla-inscriptor td:last-child{min-width:0}}
+
+/* Anchos por columna para alinear títulos e importes en pantalla e impresión. */
+@media screen {
+ .tabla-inscriptor{min-width:1500px!important;table-layout:fixed!important}
+ .tabla-inscriptor .col-registro{width:75px}.tabla-inscriptor .col-fecha{width:115px}
+ .tabla-inscriptor .col-participante{width:155px}.tabla-inscriptor .col-ci{width:100px}
+ .tabla-inscriptor .col-carrera{width:130px}.tabla-inscriptor .col-evento{width:180px}
+ .tabla-inscriptor .col-categoria{width:105px}.tabla-inscriptor .col-importe{width:90px}
+ .tabla-inscriptor .col-estado{width:100px}.tabla-inscriptor .col-usuario{width:155px}
+ .tabla-inscriptor .col-acciones{width:210px}
+}
+@media print{.tabla-inscriptor col{width:auto!important}.tabla-inscriptor col.no-print{display:none!important}}

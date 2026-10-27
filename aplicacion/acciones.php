@@ -4,6 +4,8 @@ if($_SERVER['REQUEST_METHOD']!=='POST')return;
 checkCsrf();$action=(string)($_POST['action']??'');
 if(publicPortal() && !in_array($action,['register','proof'],true)){http_response_code(403);exit('Operación no disponible en el portal público.');}
 try {
+ if($action==='cambiar_comprobante') cambiarComprobante();
+ if($action==='reenviar_comprobante') reenviarComprobante();
  if($action==='proof') enviarAbono();
  if($action==='cobrar_abono') cobrarAbono();
  if($action==='review') revisarPagoAutorizado();
@@ -121,7 +123,7 @@ try {
  throw new RuntimeException('Operación desconocida.');
 } catch(Throwable $ex) {
  if($db->inTransaction())$db->rollBack();error_log((string)$ex);
- if(in_array($action,['proof','cobrar_abono'],true)){
+ if(in_array($action,['proof','cobrar_abono','cambiar_comprobante','reenviar_comprobante'],true)){
  $GLOBALS['registro_fallido']=true;$GLOBALS['errores_registro']=str_contains($ex->getMessage(),'transacción')?['reference'=>$ex->getMessage()]:[];
  $_GET['p']=$action==='proof'?'receipt':'participant';$_GET['t']=(string)($_POST['token']??'');flash($ex instanceof PDOException?'No se pudo guardar el pago.':$ex->getMessage());return;
  }
