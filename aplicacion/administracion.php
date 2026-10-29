@@ -32,5 +32,6 @@ if($p==='users') {
 if($p==='audit') {headerPage('Historial de operaciones');echo '<div class="card p-3 table-responsive"><p>Últimas 500 operaciones.</p><table class="table"><tr><th>Fecha</th><th>Usuario</th><th>Operación</th><th>Detalle</th></tr>';foreach(all('SELECT a.*,u.name FROM audit a LEFT JOIN users u ON u.id=a.user_id ORDER BY a.id DESC LIMIT 500') as $a)echo '<tr><td>'.e($a['created_at']).'</td><td>'.e($a['name']??'Inscripción en línea').'</td><td>'.e($a['action']).'</td><td>'.e($a['detail']).'</td></tr>';echo '</table></div>';footerPage();exit;}
 if($p==='online'){require __DIR__.'/inscripciones_en_linea.php';exit;}
 if($p==='finance'){require __DIR__.'/finanzas.php';exit;}
+if($p==='reporte_carreras'){require __DIR__.'/reporte_carreras.php';exit;}
 if($p==='reports'){require __DIR__.'/reportes.php';exit;}
 http_response_code(404);headerPage('Página no encontrada');footerPage();

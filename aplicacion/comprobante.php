@@ -5,7 +5,7 @@ publicHeader('Comprobante de inscripción');
 $resumen=resumenCobro($r);$pagoRecibo=null;
 if(isset($_GET['pago'])){
  $pagoRecibo=one("SELECT * FROM pagos_inscripcion WHERE id=? AND codigo_conjunto=? AND estado_abono='Confirmado'",[(int)$_GET['pago'],claveCobro($r)]);
- if(!$pagoRecibo){http_response_code(404);exit('Recibo no encontrado.');}
+ if(!$pagoRecibo){$pagoAnterior=one('SELECT estado_abono,nota_abono FROM pagos_inscripcion WHERE id=? AND codigo_conjunto=?',[(int)$_GET['pago'],claveCobro($r)]);if($pagoAnterior&&pagoAnulado($pagoAnterior)){http_response_code(410);exit('Este recibo fue anulado y ya no acredita un pago.');}http_response_code(404);exit('Recibo no encontrado.');}
  require __DIR__.'/recibo_abono.php';enlacesComunidad($r['enlace_grupo_whatsapp']??'');publicFooter();exit;
 }
 

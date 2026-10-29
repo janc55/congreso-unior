@@ -8,6 +8,7 @@ try {
  if($action==='reenviar_comprobante') reenviarComprobante();
  if($action==='proof') enviarAbono();
  if($action==='cobrar_abono') cobrarAbono();
+ if($action==='anular_pago') anularPago();
  if($action==='review') revisarPagoAutorizado();
  if($action==='estado_inscripcion') cambiarEstadoInscripcion();
 
@@ -123,7 +124,7 @@ try {
  throw new RuntimeException('Operación desconocida.');
 } catch(Throwable $ex) {
  if($db->inTransaction())$db->rollBack();error_log((string)$ex);
- if(in_array($action,['proof','cobrar_abono','cambiar_comprobante','reenviar_comprobante'],true)){
+ if(in_array($action,['proof','cobrar_abono','cambiar_comprobante','reenviar_comprobante','anular_pago'],true)){
  $GLOBALS['registro_fallido']=true;$GLOBALS['errores_registro']=str_contains($ex->getMessage(),'transacción')?['reference'=>$ex->getMessage()]:[];
  $_GET['p']=$action==='proof'?'receipt':'participant';$_GET['t']=(string)($_POST['token']??'');flash($ex instanceof PDOException?'No se pudo guardar el pago.':$ex->getMessage());return;
  }
