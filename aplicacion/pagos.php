@@ -7,9 +7,13 @@ function estilosSaldoPendiente(): void {
  echo '<style>.tabla-saldos tr.con-saldo>td{background-color:#fff0d6!important;color:#412400}.tabla-saldos tr.con-saldo>td:first-child{box-shadow:inset 4px 0 #c96b00}.etiqueta-saldo{display:inline-block;background:#9b4b00;color:#fff;border-radius:4px;padding:2px 6px;font-size:11px;font-weight:700;white-space:nowrap}.leyenda-saldo{font-size:13px;margin:10px 0}@media print{.tabla-saldos tr.con-saldo>td{-webkit-print-color-adjust:exact;print-color-adjust:exact}.etiqueta-saldo{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style>';
 }
 function claveCobro(array $r): string{return $r['codigo_grupo']?'grupo-'.$r['codigo_grupo']:'persona-'.$r['id'];}
+function tieneRecibosAnulados(array $r): bool {
+ return (bool)one("SELECT id FROM pagos_inscripcion WHERE codigo_conjunto=? AND estado_abono='Rechazado' AND nota_abono LIKE ? LIMIT 1",[claveCobro($r),'[PAGO ANULADO] %']);
+}
 function resumenCobro(array $r): array{
  $personas=integrantesGrupo($r);$total=0;$cobrado=0;
  foreach($personas as $p){$total+=(int)round($p['price']*100);$cobrado+=(int)round(($p['monto_cobrado']??0)*100);}
+ if(tieneRecibosAnulados($r)){$cobrado=0;foreach(all("SELECT importe_abono FROM pagos_inscripcion WHERE codigo_conjunto=? AND estado_abono='Confirmado'",[claveCobro($r)]) as $p)$cobrado+=(int)round((float)$p['importe_abono']*100);}
  return ['total'=>$total,'cobrado'=>$cobrado,'saldo'=>max(0,$total-$cobrado)];
 }
 function importeAbono(): int{
@@ -49,7 +53,9 @@ function registrarCobroInicial(array $r): void{
 function bloquearCobro(array $r): array{
  // Orden estable: se bloquean las personas antes que los abonos.
  foreach(integrantesGrupo($r,true) as $persona)if($persona['status']==='Anulado')throw new RuntimeException('La inscripción o su grupo están anulados. Solo el administrador puede reactivarlos.');$r=registration($r['token']);
- if($r['status']==='Anulado')throw new RuntimeException('La inscripción está anulada.');return $r;
+ if($r['status']==='Anulado')throw new RuntimeException('La inscripción está anulada.');
+ if(tieneRecibosAnulados($r)){recalcularCobroVigente($r);$r=registration($r['token']);}
+ return $r;
 }
 function enviarAbono(): never{
  global $db;$r=registration(textValue('token',48));$db->beginTransaction();$r=bloquearCobro($r);$res=resumenCobro($r);
@@ -86,30 +92,35 @@ function cobrarAbono(): never{
  $archivo=comprobantePresencial($metodo);$id=insertarAbono($r,$importe,$codigo,$archivo,$metodo,true);guardarComprobantePresencial($r,$codigo,$archivo);aplicarAbono($r,$importe);audit('Cobro de saldo','Pago '.$id.' · inscripción '.$r['id']);$db->commit();go('p=receipt&t='.$r['token'].'&pago='.$id.'&imprimir=1');
 }
 function pagoAnulado(array $p): bool { return ($p['estado_abono']??'')==='Rechazado' && str_starts_with((string)($p['nota_abono']??''),'[PAGO ANULADO] '); }
+function recalcularCobroVigente(array $r): void {
+ $personas=integrantesGrupo($r,true);
+ $pagos=all('SELECT * FROM pagos_inscripcion WHERE codigo_conjunto=? ORDER BY id FOR UPDATE',[claveCobro($r)]);
+ $cobrado=0;$pendiente=false;$total=0;
+ foreach($pagos as $p){if($p['estado_abono']==='Confirmado')$cobrado+=(int)round((float)$p['importe_abono']*100);if($p['estado_abono']==='En revisión')$pendiente=true;}
+ foreach($personas as $persona)$total+=(int)round((float)$persona['price']*100);
+ if($cobrado<0||$cobrado>$total)throw new RuntimeException('Los recibos vigentes superan la tarifa. Revise los pagos antes de recalcular.');
+ $restante=$cobrado;$base=$total;
+ foreach($personas as $persona){
+  $precio=(int)round((float)$persona['price']*100);
+  $parte=$base>0?min($precio,$restante,(int)round($restante*$precio/$base)):0;
+  $restante-=$parte;$base-=$precio;
+  $estado=$persona['status']==='Anulado'?'Anulado':($parte>0?'Pagado':($pendiente?'En revisión':'Pendiente'));
+  q('UPDATE registrations SET monto_cobrado=?,status=?,paid_at=CASE WHEN ?=0 THEN NULL ELSE paid_at END WHERE id=?',[number_format($parte/100,2,'.',''),$estado,$parte,$persona['id']]);
+ }
+ if($restante!==0)throw new RuntimeException('No se pudo distribuir el importe vigente.');
+}
 function anularPago(): never {
- global $db; $u=auth(true); $r=registration(textValue('token',48));
+ global $db;auth(true);$r=registration(textValue('token',48));
  $motivo=trim((string)($_POST['motivo_anulacion_pago']??''));
  if(mb_strlen($motivo)<3||mb_strlen($motivo)>1800)throw new RuntimeException('Indique el motivo de anulación (entre 3 y 1800 caracteres).');
  $id=(int)($_POST['pago_id']??0);if($id<1)throw new RuntimeException('Seleccione un pago válido.');
- $db->beginTransaction(); $r=bloquearCobro($r); $personas=integrantesGrupo($r,true);
+ $db->beginTransaction();$r=bloquearCobro($r);
  $pago=one('SELECT * FROM pagos_inscripcion WHERE id=? AND codigo_conjunto=? FOR UPDATE',[$id,claveCobro($r)]);
  if(!$pago||$pago['estado_abono']!=='Confirmado')throw new RuntimeException('El pago no existe, ya fue anulado o no está confirmado.');
- $importe=(int)round((float)$pago['importe_abono']*100);$acumulado=0;
- foreach($personas as $persona)$acumulado+=(int)round((float)$persona['monto_cobrado']*100);
- if($importe<=0||$importe>$acumulado)throw new RuntimeException('El pago no coincide con el total cobrado. Solicite una revisión de los datos antes de anularlo.');
- $restante=$importe;$disponible=$acumulado;
- $enRevision=(bool)one("SELECT id FROM pagos_inscripcion WHERE codigo_conjunto=? AND estado_abono='En revisión' LIMIT 1",[claveCobro($r)]);
- foreach($personas as $persona){
-  $pagado=(int)round((float)$persona['monto_cobrado']*100);
-  $parte=$disponible>0?min($pagado,$restante,(int)round($restante*$pagado/$disponible)):0;
-  $restante-=$parte;$disponible-=$pagado;$nuevo=$pagado-$parte;
-  $estado=$nuevo>0?'Pagado':($enRevision?'En revisión':'Pendiente');
-  q('UPDATE registrations SET monto_cobrado=?,status=? WHERE id=?',[number_format($nuevo/100,2,'.',''),$estado,$persona['id']]);
- }
- if($restante!==0)throw new RuntimeException('No se pudo distribuir la anulación entre los integrantes.');
  q("UPDATE pagos_inscripcion SET estado_abono='Rechazado',nota_abono=? WHERE id=?",['[PAGO ANULADO] '.$motivo,$id]);
- audit('Pago anulado','Pago '.$id.' · Inscripción '.$r['id'].' · Importe '.number_format($importe/100,2,'.','').' · Motivo: '.$motivo);
- $db->commit();flash('Pago anulado. El saldo pendiente fue actualizado.');go('p=participant&t='.$r['token'].'#pagos-saldo');
+ recalcularCobroVigente($r);
+ audit('Pago anulado','Pago '.$id.' · Inscripción '.$r['id'].' · Importe '.$pago['importe_abono'].' · Motivo: '.$motivo);
+ $db->commit();flash('Pago anulado. El saldo se calculó con los recibos confirmados vigentes.');go('p=participant&t='.$r['token'].'#pagos-saldo');
 }
 function panelAbonos(array $r,bool $panel=false): void{
  if(!$panel||publicPortal()||!user())return;

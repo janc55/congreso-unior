@@ -11,7 +11,7 @@ function registrarGrupo(): never {
  if($evento['capacity']>0&&$usados+count($personas)>$evento['capacity'])throw new RuntimeException('No quedan cupos suficientes para todo el grupo.');
  validarDocumentosInscripcion($id,$personas);
  $porcentaje=2000;
- $staff=publicPortal()?null:user();$cash=$staff&&isset($_POST['paid_now']);$method=$cash?($_POST['payment_method']??'Efectivo'):null;
+ $staff=publicPortal()?null:user();$cash=(bool)$staff;if($cash)$_POST['paid_now']='1';$method=$cash?($_POST['payment_method']??'Efectivo'):null;
  if($cash&&!in_array($method,['Efectivo','QR/Transferencia','Tarjeta'],true))throw new RuntimeException('Forma de pago inválida.');
  $grupo=bin2hex(random_bytes(24));$primerToken='';$documentos=[];
  foreach($personas as $numero=>$persona){

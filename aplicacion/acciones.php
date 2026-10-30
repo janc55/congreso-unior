@@ -31,7 +31,7 @@ try {
   if($event['capacity']>0&&(int)q("SELECT COUNT(*) FROM registrations WHERE event_id=? AND status<>'Anulado'",[$id])->fetchColumn()>=$event['capacity'])throw new RuntimeException('No quedan cupos.');
   validarDocumentosInscripcion($id,[$_POST]);
   $t=tariff($id,$category);if(!$t)throw new RuntimeException('No hay tarifa vigente para esa categoría. Consulte con la administración.');
-  $token=bin2hex(random_bytes(24));$ct=bin2hex(random_bytes(24));$staff=publicPortal()?null:user();$cash=$staff&&isset($_POST['paid_now']);$method=($cash?($_POST['payment_method']??'Efectivo'):null);
+  $token=bin2hex(random_bytes(24));$ct=bin2hex(random_bytes(24));$staff=publicPortal()?null:user();$cash=(bool)$staff;if($cash)$_POST['paid_now']='1';$method=($cash?($_POST['payment_method']??'Efectivo'):null);
   if($cash&&!in_array($method,['Efectivo','QR/Transferencia','Tarjeta'],true))throw new RuntimeException('Forma de pago inválida.');
   q('INSERT INTO registrations(tratamiento,event_id,token,certificate_token,first_name,last_name,ci,city,phone,email,institution,category,price,tariff_id,status,payment_method,reference,paid_at,reviewed_by,created_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[$tratamiento,$id,$token,$ct,$first,$last,$ci,$city,$phone,$email,mb_substr(trim($_POST['institution']??''),0,200),$category,$t['price'],$t['id'],$cash?'Pagado':'Pendiente',$method,$cash?mb_substr(trim($_POST['reference']??''),0,120):null,$cash?date('Y-m-d H:i:s'):null,$cash?$staff['id']:null,$staff['id']??null]);
   q('UPDATE registrations SET carrera=? WHERE token=?',[validarCarrera($_POST),$token]);
