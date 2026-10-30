@@ -9,6 +9,7 @@ try {
  if($action==='proof') enviarAbono();
  if($action==='cobrar_abono') cobrarAbono();
  if($action==='anular_pago') anularPago();
+ if($action==='editar_inscripcion') guardarEdicionInscripcion();
  if($action==='review') revisarPagoAutorizado();
  if($action==='estado_inscripcion') cambiarEstadoInscripcion();
 
@@ -128,6 +129,7 @@ try {
  $GLOBALS['registro_fallido']=true;$GLOBALS['errores_registro']=str_contains($ex->getMessage(),'transacción')?['reference'=>$ex->getMessage()]:[];
  $_GET['p']=$action==='proof'?'receipt':'participant';$_GET['t']=(string)($_POST['token']??'');flash($ex instanceof PDOException?'No se pudo guardar el pago.':$ex->getMessage());return;
  }
+ if($action==='editar_inscripcion'){$_GET['p']='editar_inscripciones';$_GET['id']=(int)($_POST['inscripcion_id']??0);$GLOBALS['edicion_fallida']=true;if(str_contains($ex->getMessage(),'CI'))$GLOBALS['errores_registro']=['ci'=>$ex->getMessage()];if(str_contains($ex->getMessage(),'correo'))$GLOBALS['errores_registro']=['email'=>$ex->getMessage()];flash($ex instanceof PDOException?'No se pudo guardar. Revise si el CI ya está registrado en este evento.':$ex->getMessage());return;}
  if($action==='register'){
   $errores=$ex instanceof ErrorDatosInscripcion?$ex->campos:(str_contains($ex->getMessage(),'transacción')?['reference'=>$ex->getMessage()]:[]);
   $mensaje=$ex instanceof PDOException?'No se pudo guardar la inscripción. Revise los datos e intente nuevamente.':$ex->getMessage();

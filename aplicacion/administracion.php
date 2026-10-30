@@ -2,6 +2,7 @@
 if(!defined('UNIOR_INICIADO')){http_response_code(403);exit;}
 if($p==='online'){auth();require __DIR__.'/inscripciones_en_linea.php';exit;}
 $u=auth(true);
+if($p==='editar_inscripciones'){mostrarEdicionInscripciones();exit;}
 if($p==='gestion_inscripciones'){require __DIR__.'/gestion_inscripciones.php';exit;}
 if($p==='recibos_pagos'){require __DIR__.'/recibos_pagos.php';exit;}
 if($p==='categories'){require __DIR__.'/categorias.php';exit;}
