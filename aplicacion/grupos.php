@@ -12,7 +12,8 @@ function registrarGrupo(): never {
  validarDocumentosInscripcion($id,$personas);
  $porcentaje=2000;
  $staff=publicPortal()?null:user();$cash=(bool)$staff;if($cash)$_POST['paid_now']='1';$method=$cash?($_POST['payment_method']??'Efectivo'):null;
- if($cash&&!in_array($method,['Efectivo','QR/Transferencia','Tarjeta'],true))throw new RuntimeException('Forma de pago inválida.');
+ if($cash&&$method==='Descuento por planilla'&&$staff['role']!=='admin')throw new RuntimeException('El descuento por planilla es exclusivo del administrador.');
+ if($cash&&!in_array($method,['Efectivo','QR/Transferencia','Tarjeta','Descuento por planilla'],true))throw new RuntimeException('Forma de pago inválida.');
  $grupo=bin2hex(random_bytes(24));$primerToken='';$documentos=[];
  foreach($personas as $numero=>$persona){
   if(!is_array($persona))throw new RuntimeException('Integrante inválido.');
@@ -20,7 +21,7 @@ function registrarGrupo(): never {
   $datos['ci']=mb_strtoupper($datos['ci']);$tratamiento=trim((string)($persona['tratamiento']??''));
   if(!array_key_exists($tratamiento,tratamientos())||!in_array($datos['category'],['Estudiante','Profesional','Estudiante BTH','UNIOR'],true)||!filter_var($datos['email'],FILTER_VALIDATE_EMAIL))throw new RuntimeException('Revise tratamiento, categoría y correo del participante '.($numero+1).'.');
   if(isset($documentos[$datos['ci']])||one('SELECT id FROM registrations WHERE event_id=? AND ci=?',[$id,$datos['ci']]))throw new RuntimeException('El documento '.$datos['ci'].' está repetido o ya inscrito.');$documentos[$datos['ci']]=true;
-  $tarifa=tariff($id,$datos['category']);if(!$tarifa)throw new RuntimeException('No hay tarifa vigente para '.$datos['category'].'.');
+  $tarifa=tarifaParaInscripcion($id,$datos['category'],$persona);
   $base=(int)round((float)$tarifa['price']*100);$descuento=intdiv($base*$porcentaje+5000,10000);$final=$base-$descuento;
   $token=bin2hex(random_bytes(24));if(!$primerToken)$primerToken=$token;
   q('INSERT INTO registrations(tratamiento,event_id,token,certificate_token,first_name,last_name,ci,city,phone,email,institution,category,price,tariff_id,status,payment_method,reference,paid_at,reviewed_by,created_by,codigo_grupo,precio_base,descuento_grupo) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[$tratamiento,$id,$token,bin2hex(random_bytes(24)),$datos['first_name'],$datos['last_name'],$datos['ci'],$datos['city'],$datos['phone'],$datos['email'],mb_substr(trim((string)($persona['institution']??'')),0,200),$datos['category'],number_format($final/100,2,'.',''),$tarifa['id'],$cash?'Pagado':'Pendiente',$method,$cash?mb_substr(trim($_POST['reference']??''),0,120):null,$cash?date('Y-m-d H:i:s'):null,$cash?$staff['id']:null,$staff['id']??null,$grupo,number_format($base/100,2,'.',''),number_format($descuento/100,2,'.','')]);

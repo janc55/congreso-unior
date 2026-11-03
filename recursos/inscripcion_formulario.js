@@ -5,8 +5,8 @@
  const tarifas=JSON.parse(seccion.dataset.tarifas);let activo=false,enviando=false;
  const lleno=c=>!c.required||(c.value.trim()!==''&&c.validity.valid);
  function actualizar(){
-  const bloques=[...lista.querySelectorAll('.grupo-integrante')],catPrincipal=form.querySelector('[name="category"]').value,categorias=[catPrincipal,...(activo?bloques.map(e=>e.querySelector('[data-campo="category"]').value):[])];let base=0,total=0;
-  categorias.forEach(cat=>{const n=Math.round(Number(tarifas[cat])*100);base+=n;total+=n-(activo?Math.floor((n*2000+5000)/10000):0);});
+  const bloques=[...lista.querySelectorAll('.grupo-integrante')],catPrincipal=form.querySelector('[name="category"]').value,participantes=[form,...(activo?bloques:[])];let base=0,total=0;
+  participantes.forEach(bloque=>{const cat=bloque===form?catPrincipal:bloque.querySelector('[data-campo="category"]').value,selector=bloque.querySelector('[data-tarifa-admin]'),importe=selector?.selectedOptions?.[0]?.dataset?.importe;const n=Math.round(Number(importe??tarifas[cat]??0)*100);base+=n;total+=n-(activo?Math.floor((n*2000+5000)/10000):0);});
   const dinero=n=>'Bs '+(n/100).toFixed(2);seccion.querySelector('[data-grupo-estimacion]').textContent=`${activo?'Grupo de 5 personas · 20 % de descuento':'Inscripción individual · Sin descuento'} · Tarifa: ${dinero(base)} · Ahorro: ${dinero(base-total)} · Total: ${dinero(total)}`;
   const principales=[...form.querySelectorAll('[required]')].filter(c=>!lista.contains(c)),completos=(principales.every(lleno)?1:0)+bloques.filter(b=>[...b.querySelectorAll('[required]')].every(lleno)).length;
   const valido=[...form.querySelectorAll('input,select,textarea')].filter(c=>!c.disabled).every(c=>c.validity.valid&&lleno(c));
