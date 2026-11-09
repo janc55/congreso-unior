@@ -2,6 +2,8 @@
 if(!defined('UNIOR_INICIADO')){http_response_code(403);exit;}
 if($p==='online'){auth();require __DIR__.'/inscripciones_en_linea.php';exit;}
 $u=auth(true);
+if($p==='exportar_qr_inscritos'){require __DIR__.'/exportar_qr_inscritos.php';exit;}
+if($p==='listado_inscritos'){require __DIR__.'/listado_inscritos.php';exit;}
 if($p==='reporte_tipos_carrera'){require __DIR__.'/reporte_tipos_carrera.php';exit;}
 if(in_array($p,['reporte_origen','reporte_planilla','reporte_tipos'],true)){require __DIR__.'/reporte_origen_planilla.php';exit;}
 if($p==='editar_inscripciones'){mostrarEdicionInscripciones();exit;}

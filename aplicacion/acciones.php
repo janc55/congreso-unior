@@ -30,14 +30,17 @@ try {
   if(!$event||!$event['active']||$today<$event['registration_start']||$today>$event['registration_end'])throw new RuntimeException('Inscripciones cerradas para este evento.');
   if($event['capacity']>0&&(int)q("SELECT COUNT(*) FROM registrations WHERE event_id=? AND status<>'Anulado'",[$id])->fetchColumn()>=$event['capacity'])throw new RuntimeException('No quedan cupos.');
   validarDocumentosInscripcion($id,[$_POST]);
+  $inscriptor=usuarioInscripcionPresencial($_POST);
   $t=tarifaParaInscripcion($id,$category,$_POST);
+  $d=descuentoPresencial($_POST,(int)round((float)$t['price']*100));$t['price']=number_format($d['final']/100,2,'.','');
   $token=bin2hex(random_bytes(24));$ct=bin2hex(random_bytes(24));$staff=publicPortal()?null:user();$cash=(bool)$staff;if($cash)$_POST['paid_now']='1';$method=($cash?($_POST['payment_method']??'Efectivo'):null);
   if($cash&&$method==='Descuento por planilla'&&$staff['role']!=='admin')throw new RuntimeException('El descuento por planilla es exclusivo del administrador.');
  if($cash&&!in_array($method,['Efectivo','QR/Transferencia','Tarjeta','Descuento por planilla'],true))throw new RuntimeException('Forma de pago inválida.');
-  q('INSERT INTO registrations(tratamiento,event_id,token,certificate_token,first_name,last_name,ci,city,phone,email,institution,category,price,tariff_id,status,payment_method,reference,paid_at,reviewed_by,created_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[$tratamiento,$id,$token,$ct,$first,$last,$ci,$city,$phone,$email,mb_substr(trim($_POST['institution']??''),0,200),$category,$t['price'],$t['id'],$cash?'Pagado':'Pendiente',$method,$cash?mb_substr(trim($_POST['reference']??''),0,120):null,$cash?date('Y-m-d H:i:s'):null,$cash?$staff['id']:null,$staff['id']??null]);
+  q('INSERT INTO registrations(tratamiento,event_id,token,certificate_token,first_name,last_name,ci,city,phone,email,institution,category,price,tariff_id,status,payment_method,reference,paid_at,reviewed_by,created_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[$tratamiento,$id,$token,$ct,$first,$last,$ci,$city,$phone,$email,mb_substr(trim($_POST['institution']??''),0,200),$category,$t['price'],$t['id'],$cash?'Pagado':'Pendiente',$method,$cash?mb_substr(trim($_POST['reference']??''),0,120):null,$cash?date('Y-m-d H:i:s'):null,$cash?$staff['id']:null,$inscriptor]);
   q('UPDATE registrations SET carrera=? WHERE token=?',[validarCarrera($_POST),$token]);
+  guardarDescuentoPresencial($token,$d);
   if($cash) registrarCobroInicial(registration($token));
-  audit('Inscripción','Evento '.$id.' · Registro '.registration($token)['id'].' · Usuario '.($staff['id']??'En línea'));$db->commit();finalizarInscripcion($token);
+  audit('Inscripción','Evento '.$id.' · Registro '.registration($token)['id'].' · Inscrito por '.($inscriptor??'En línea').' · Operado por '.($staff['id']??'En línea'));$db->commit();finalizarInscripcion($token);
  }
  if($action==='proof') {
   $r=registration(textValue('token',48));if($r['codigo_grupo'])comprobanteGrupo($r);$db->beginTransaction();$locked=one('SELECT status FROM registrations WHERE id=? FOR UPDATE',[$r['id']]);
